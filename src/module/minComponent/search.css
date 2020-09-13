@@ -1,0 +1,150 @@
+.searchBox{
+    width: 370px;
+    height: 40px;
+    display: flex;
+    position: relative;
+    align-items: center;
+    margin: 5px 20px;
+}
+.searchBox > .inputBox {
+    width:100%;
+    height: 100%;
+    position: relative;
+    display:flex;
+    align-items: center;
+
+}
+.searchBox > .inputBox .input{
+    position: relative;
+    width: calc(100% - 40px);
+    height: 80%;
+    border-radius: 15px;
+    overflow: hidden;
+    border: 1px solid gray;
+    /* box-sizing: border-box;
+    padding:0 5px; */
+    /* left: 10%; */
+    /* margin: 2% 0; */
+}
+.searchBox > .inputBox > .input .searchInput{
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    box-sizing: border-box;
+    padding:0 22px 0 5px;
+    border: 0;
+}
+
+.searchBox .inputBox > .btn{
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: relative;
+    top:0;
+    left: -20px;
+    background: #66ccff;
+}
+.searchBox  .inputBox > .btn > img{
+    width:100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.searchBox > .suggestBox{
+    width:calc(100% - 45px);
+    position: absolute;
+    left: 5px;
+    top: 100%;
+    margin-top: 2px;
+    padding:5px;
+    box-shadow: 1px 1px 3px black;
+    transition: all 0.6s;
+    overflow: hidden;
+}
+.searchBox > .suggestHide{
+    opacity: 0;
+    height:0;
+}
+.searchBox .tips{
+    display: flex;
+    width: 100%;
+    height: auto;
+    justify-content: center;
+    align-items:center;
+    box-sizing: border-box;
+    position: relative;
+    padding: 5px;
+}
+.suggestBox > ul{
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: block;
+    padding: 0;
+    margin: 0;
+}
+.suggestBox > ul > .suggestItem{
+    display: flex;
+    list-style: none;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    height: 35px;
+    box-sizing: border-box;
+    font-size: 1.05rem;
+    background-color: #fff;
+    overflow:hidden;
+    transition: all 1s;
+    cursor: pointer;
+}
+.suggestBox > ul > .suggestItem:hover{
+    text-shadow: 1px 1px 3px orangered;
+}
+.suggestBox > ul > .selected{
+    background-color: rgb(221, 184, 184);
+    color: #fff;
+}
+.suggestBox > ul > .suggestItem::before{
+    content: '';
+    display: flex;
+    position: absolute;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    width:0%;
+    height:0%;
+    background-color: #e3e3e3;
+    transition: all 0.4s;
+    overflow:hidden;
+}
+.suggestBox > ul > .suggestItem::after{
+    content: attr(title);
+    display: flex;
+    color: pink;
+    border-bottom: 2px solid #6cf;
+    position: absolute;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: center;
+    width:0%;
+    height:100%;
+    transition: all 0.3s;
+    overflow:hidden;
+}
+.suggestBox > ul > .selected::before{
+    height:100%;
+    width: 100%;
+}
+.suggestBox > ul > .selected::after{
+    width:100%;
+}
+
+
+
+

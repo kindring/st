@@ -1,0 +1,94 @@
+.window{
+    width: 100%;
+    height: calc(100% - 30px);
+    display: flex;
+    background-color: #fff;
+}
+.window > *{
+    display: block;
+    height: 100%;
+    transition: all 0.5s ease;
+}
+
+/* 侧边栏样式 */
+.window > .sidebar{
+    display: flex;
+    min-width: 50px;
+    border-right: 1px solid gray;
+    justify-content: center;
+    /* background-color: rgba(0,0,0,0.4); */
+    position: relative;
+}
+.window > .sidebar::before{
+    content: "";
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    filter: blur(1px);
+    background-color: skyblue;
+    opacity: 0.6;
+}
+.window > .sidebar > *{
+    position: relative;
+}
+
+.window > .sidebar .ul{
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    overflow-y:auto;
+}
+.window > .sidebar .iconBtn{
+    display: block;
+    width: 40px;
+    height: 40px;
+    margin: 10px 5px;
+    box-shadow: 0 1px 3px 2px gray;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+.window > .sidebar .iconBtn > .svg{
+    display: block;
+    /* position: absolute;
+    left: 0;
+    top: 0; */
+    width: 80%;
+    height: 80%;
+    padding: 5%;
+}
+.window > .sidebar .iconBtn > .nameBox{
+    position: absolute;
+    width: 170px;
+    right: 0px;
+    height: 35px;
+    line-height: 35px;
+    /* background-color: #fff; */
+}
+
+.scorllbar{
+    position: relative;
+}
+.scorllbar::-webkit-scrollbar{
+    width: 3px;
+    height: 100%;
+    display: block;
+    position: absolute;
+    background-color: rgba(0,0,0,0);
+}
+.scorllbar::-webkit-scrollbar-thumb{
+    width: 2px;
+    height: auto;
+    background-color: orangered;
+    box-shadow: 1px 1px solid black;
+    border-radius: 1px 0 0 1px;
+}

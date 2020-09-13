@@ -75,15 +75,6 @@ class topBar extends Component{
                 <div className="drag"></div>
                 <div className="content">
                     <div className="title">{this.props.wintitle}</div>
-                    {/* <div className="search">
-                        <input type="text" className="searchInput searchControl"/>
-                        <button className="searchBtn searchControl"></button>
-                        <div className="searchResultBox">
-                            <ul>
-                                <li className="searchItem"></li>
-                            </ul>
-                        </div>
-                    </div> */}
                     <div className="control">
                         {
                             structure.map((item)=>{

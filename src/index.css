@@ -14,7 +14,7 @@ body {
   box-shadow: 0 0 2px 3px black;
   box-sizing: border-box; */
   height: 100vh;
-  overflow:hidden;
+  /* overflow:hidden; */
 }
 
 code {
