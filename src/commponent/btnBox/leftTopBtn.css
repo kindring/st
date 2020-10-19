@@ -1,0 +1,50 @@
+/* 单组件 */
+.rightTopBtn{
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.rightTopBtn > .btns{
+    width: 120px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+.rightTopBtn > .btns > .btn{
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    box-shadow: -1px 1px 2px black;
+    margin: 0 10px;
+    cursor: pointer;
+    position: relative;
+
+}
+.rightTopBtn > .btns > .btn::before{
+    content: ' ';
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    position: absolute;
+    transform: rotate(0deg) scale(1);
+    border-radius: 50%;
+    transition: all 0.8s ease-out;
+    background-color: inherit;
+}
+.rightTopBtn > .btns > .btn:hover,.btn::before{
+    transform: rotate(45deg);
+    border-radius: 1%;
+    /* transform: rotate(666turn); */
+    /* transition-duration: 100s; */
+    /* transition-timing-function: cubic-bezier(.34, 0, .95, 0.8,1,1) */
+}
+.rightTopBtn > .btns .min{
+    background-color: rgba(0,255,0);
+}
+.rightTopBtn > .btns .full{
+    background-color: rgba(255,0,255);
+}
+.rightTopBtn > .btns .close{
+    background-color: rgb(62, 126, 193)
+}

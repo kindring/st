@@ -1,0 +1,12 @@
+.mainWindow {
+    width: 100%;
+    height: 100%;
+    background-color: #e3e3e3;
+}
+
+.mainWindow .sideBar {
+    width: 170px;
+    height: 100%;
+    border-right: 1px solid gray;
+    position: relative;
+}
