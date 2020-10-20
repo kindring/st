@@ -12,6 +12,7 @@ import leftBarCss from './leftBar.css'
 function leftBar(state){
     return (
         <div className="leftBar">
+            <div className="drag"></div>
             <ul className="ul">
                 {
                     state.arr.map((item)=>{

@@ -11,8 +11,11 @@
     box-sizing: border-box;
     display: block;
     padding: 0;
-    padding-top: 30px;
+    padding-top: 20px;
     margin: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .leftBar>ul>li {
@@ -27,7 +30,7 @@
     border-bottom: 1px solid black;
 }
 
-.drag {
+.leftBar .drag {
     height: 30px;
     width: 100%;
     -webkit-app-region: drag;
