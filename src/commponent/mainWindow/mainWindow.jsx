@@ -1,7 +1,7 @@
 import React from 'react'
 import mainWindowCss from './mainWindow.css'
 import LeftBar from '../leftBar'
-
+import TC from '../tcpClientPage'
 
 
 let arr = [
@@ -28,7 +28,9 @@ function mainWindow(){
             <div className="sideBar">
                 <LeftBar arr={arr}/>
             </div>
-            <div className="content"></div>
+            <div className="content">
+                <TC/>
+            </div>
         </div>
     )
 }

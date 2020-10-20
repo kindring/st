@@ -94,3 +94,5 @@ function tcpClientPage(){
         </div>
     )
 }
+
+export default tcpClientPage
