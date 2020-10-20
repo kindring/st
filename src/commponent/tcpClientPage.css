@@ -1,0 +1,54 @@
+.tc {
+    width: 100%;
+    height: 100%;
+    background-color: white;
+}
+
+.tc .config-box {
+    width: 100%;
+    height: auto;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #000;
+    display: flex;
+    justify-content: space-around;
+}
+
+.config-box .address-box {
+    width: 100px;
+    height: 30px;
+    border: 1px solid #000;
+}
+
+.config-box .port-box {
+    width: 70px;
+    height: 30px;
+    border: 1px solid #000;
+}
+
+.config-box .quick-config {
+    width: 50%;
+    height: 100px;
+    border: 1px solid #000;
+}
+
+.quick-config>.nav {
+    width: 100%;
+    height: 30px;
+    border-bottom: 1px solid #000;
+    display: flex;
+    justify-content: space-between;
+}
+
+.qucik-config>.nav>.control-btn {
+    width: auto;
+    height: 30px;
+    line-height: 30px;
+    display: flex;
+    padding: 0 5px;
+}
+
+.quick-config>.quick-config-lists {
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid gray;
+}

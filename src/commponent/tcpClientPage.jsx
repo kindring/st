@@ -1,9 +1,9 @@
 import React from 'react'
-
+import css from './tcpClientPage.css'
 function tcpClientPage(){
     return (
         <div className="tc">
-            <div className="configBox">
+            <div className="config-box">
                 <div className="address-box">
                     <div className="address-input"></div>
                     

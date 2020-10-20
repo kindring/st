@@ -27,7 +27,7 @@
     border-bottom: 1px solid black;
 }
 
-.drag {
+.leftBar .drag {
     height: 30px;
     width: 100%;
     -webkit-app-region: drag;
