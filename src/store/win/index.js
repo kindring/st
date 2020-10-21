@@ -3,6 +3,6 @@ import { createStore } from 'redux'
 
 import reduxer from './reduxer';
 
-const store = createStore(reduxer)
+// const store = createStore(reduxer)
 
-export default store
+export default reduxer
