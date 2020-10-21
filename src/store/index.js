@@ -1,10 +1,10 @@
 import { combineReducers } from 'redux'
-import reducer from './reducer'
 
 import socket from './socket'
+import win from './win'
 const store = combineReducers({
     socket,
-    ipc
+    win
 })
 
 export default store

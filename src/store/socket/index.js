@@ -3,9 +3,6 @@ import { createStore } from 'redux'
 
 import reduxer from './reduxer';
 
-const store = combineReducers({
-    socket,
-    ipc
-})
+const store = createStore(reduxer)
 
 export default store
