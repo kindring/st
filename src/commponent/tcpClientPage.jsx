@@ -25,19 +25,13 @@ function tcpClientPage(){
                                 <div className="name">网关模块</div>
                                 <div className="descript">
                                     <div className="address">
-                                        <div className="name">
-                                            address:
-                                        </div>
                                         <div className="config">
                                             192.168.1.35
                                         </div>
                                     </div>
                                     <div className="port">
-                                        <div className="name">
-                                            port:
-                                        </div>
                                         <div className="config">
-                                            35888
+                                            :35888
                                         </div>
                                     </div>
                                     
