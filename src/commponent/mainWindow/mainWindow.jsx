@@ -3,7 +3,7 @@ import mainWindowCss from './mainWindow.css'
 import LeftBar from '../leftBar'
 import TC from '../tcpClientPage'
 
-console.log(electron)
+// console.log(electron)
 let arr = [
     {
         id:1,
