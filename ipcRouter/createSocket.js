@@ -93,25 +93,22 @@ function createTcpClient(remoteHost, remotePort) {
         host: remoteHost
     }
     tcpClient.connect(option, () => {
-            if (tcpServer.onConnect && typeof tcpServer.onConnect == 'function') {
-                tcpServer.onConnect()
-            }
-        })
-        // tcpClient.
+        if (tcpServer.onConnect && typeof tcpServer.onConnect == 'function') {
+            tcpServer.onConnect()
+        }
+    })
+    tcpClient.
     return tcpClient
 }
 
-function createUdpServer(port) {
+function createUdpServer() {
     let udpServer = dgram.createSocket('udp4');
-    // udpServer
-
     return udpServer
 }
 
 
-function createUdpClient(remoteAddress, remotePort, localPort) {
+function createUdpClient() {
     let udpClient = dgram.createSocket('udp4');
-    remoteAddress, remotePort, localPort
     return udpClient
 }
 

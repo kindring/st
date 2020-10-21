@@ -1,23 +1,118 @@
 import React from 'react'
+import { useState } from 'react';
 import css from './tcpClientPage.css'
+let {ipcRenderer} = window.electron;
+let obj = {
+    type:'udp',
+    module:'client',
+    address:'',
+    port:'',
+    localport:'12345'
+}
+let sockets = []
+ipcRenderer.on('udpClient-created',(event,id)=>{
+    console.log('连接成功,可以发送消息了',id)
+    sockets.push({
+        id,
+        type:'udp',
+        model:'client'
+    })
+
+});
+ipcRenderer.on('udpClient-msg',(event,arg)=>{
+    console.log('接受到数据:'+arg)
+})
+
 function tcpClientPage(){
+    let map = {
+        address:{
+            save(str){
+                obj.address = str;
+            },
+            check(str){
+                let reg = /((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}/g;
+                console.log( reg.test(str))
+                return !reg.test(str)
+            }
+        },
+        port:{
+            save(str){
+                obj.port = str;
+            },
+            check(str){ 
+                return str > 0 && str < 65536 
+            }
+        },
+        localport:{
+            save(str){
+                obj.localport = str;
+            },
+            check(str){ 
+                return str > 0 && str < 65536 
+            }
+        }
+    }
+    let msg = '默认字符串'
+    // 改变数值的事件
+    function changeStateHandel(e,name){
+        e.preventDefault();
+        let value = e.target.value;
+        if(!map[name].check(value)){
+            return console.log('不正确的数值')
+        }
+        //存储当前的state
+        map[name].save(value)
+    }
+    // 点击事件绑定
+    function handelClick(){
+        console.log(obj)
+        if(!obj.address||!obj.port||!obj.localport){
+            return console.log('拒绝连接,需要详细的数据')
+        }
+        //尝试进行连接
+        ipcRenderer.send('udpCreate',{
+            remoteAddress:obj.address, 
+            remotePort:obj.port, 
+            localPort:obj.localport
+        });
+
+    }
+    function sendMsg(){
+        //检查是否有socket对象
+        if(sockets.length < 0){
+            return alert('请先创建连接')
+        }
+        
+        //获取对象
+        let idArr = sockets.forEach(item=>{ 
+            console.log(item.id)
+            ipcRenderer.send('udp-enum',{
+                id:item.id,
+                msg:msg
+            });
+        })
+        
+    }
     return (
         <div className="tc">
             <div className="config-box">
                 <div className="connect">
                     <div className="row">
                         <div className="address-box i">
-                            <input type="text" className="input"/>
+                            <input type="text" className="input" onBlur={(e)=>{changeStateHandel(e,'address')}}/>
                         </div>
                         <div className="port-box i">
-                            <input type="text" className="input"/>
+                            <input type="text" className="input"  onBlur={(e)=>{changeStateHandel(e,'port')}}/>
                         </div>
+                    </div>
+                    <div className="row">
+                        本地断开监听:<input type="text" className="input"  onBlur={(e)=>{changeStateHandel(e,'localport')}}/>
                     </div>
                     <div className="row row-btns">
                         <div className="con-btn state">
                             
                         </div>
-                        <div className="con-btn connect-btn">连接</div>
+                        <div className="con-btn connect-btn" onClick={handelClick}>连接</div>
                         <div className="con-btn close-btn">断开</div>
                     </div>
                         
@@ -101,12 +196,12 @@ function tcpClientPage(){
                         <div className="line"></div>
                     </div>
                     <div className="request">
-                        <textarea name="request" id="" cols="30" rows="10" className="request-input"></textarea>
+                        <textarea name="request" id="" cols="30" rows="10" className="request-input" onBlur={e=>{msg = e.target.value}}></textarea>
                     </div>
                     <div className="control">
                         <div className="btn hex-btn">16进制模式</div>
                         <div className="btn auto-remove-space">自动删除空格</div>
-                        <div className="btn send-btn">发送</div>
+                        <div className="btn send-btn" onClick={sendMsg}>发送</div>
                     </div>
                 </div>
 
