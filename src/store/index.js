@@ -1,10 +1,10 @@
-import { combineReducers } from 'redux'
+import { createStore, combineReducers } from 'redux'
 
 import socket from './socket'
 import win from './win'
-const store = combineReducers({
-    socket,
-    win
+const reduxers = combineReducers({
+    socket: socket,
+    win: win
 })
-
+let store = createStore(reduxers);
 export default store

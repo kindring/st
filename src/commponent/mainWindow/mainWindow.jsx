@@ -2,7 +2,9 @@ import React from 'react'
 import mainWindowCss from './mainWindow.css'
 import LeftBar from '../leftBar'
 import TC from '../tcpClientPage'
+import store from '../../store/index.js'
 
+console.log(store.getState())
 // console.log(electron)
 let arr = [
     {
