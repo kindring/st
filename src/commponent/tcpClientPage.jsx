@@ -1,5 +1,5 @@
-import React from 'react'
-import { useState } from 'react';
+import React,{ useState } from 'react'
+import {connect,useSelector } from 'react-redux'
 import css from './tcpClientPage.css'
 let {ipcRenderer} = window.electron;
 let obj = {
@@ -23,7 +23,9 @@ ipcRenderer.on('udpClient-msg',(event,arg)=>{
     console.log('接受到数据:'+arg)
 })
 
-function tcpClientPage(){
+function TcpClientPage(props){
+    
+    let state = useSelector(state=>state)
     let map = {
         address:{
             save(str){
@@ -53,6 +55,7 @@ function tcpClientPage(){
         }
     }
     let msg = '默认字符串'
+    console.log(state)
     // 改变数值的事件
     function changeStateHandel(e,name){
         e.preventDefault();
@@ -91,6 +94,25 @@ function tcpClientPage(){
                 msg:msg
             });
         })
+        
+    }
+    //修改模式
+    function modelChangeHandel(e,model){
+        // console.log(state);
+        // switch (model) {
+        //     case 'hex':
+        //         store.dispatch({
+        //             type:'CHANGE_HEX_MODEL'
+        //         })
+        //         break;
+        //     case 'space':
+        //         store.dispatch({
+        //             type:'CHANGE_REMOVE_SPACE'
+        //         })
+        //         break;
+        //     default:
+        //         break;
+        // }
         
     }
     return (
@@ -199,8 +221,28 @@ function tcpClientPage(){
                         <textarea name="request" id="" cols="30" rows="10" className="request-input" onBlur={e=>{msg = e.target.value}}></textarea>
                     </div>
                     <div className="control">
-                        <div className="btn hex-btn">16进制模式</div>
-                        <div className="btn auto-remove-space">自动删除空格</div>
+                        <div 
+                            className="btn hex-btn"
+                            onClick={(e)=>{
+                                modelChangeHandel(e,'hex')
+                            }}
+                        >
+                            16进制模式
+                            {
+                                // state.socket.hex_model?'开启':'关闭'
+                            }
+                        </div>
+                        <div
+                            className="btn auto-remove-space"
+                            onClick={(e)=>{
+                                modelChangeHandel(e,'space')
+                            }}
+                        >
+                            自动删除空格
+                        {
+                                // state.socket.auto_remove_space?'开启':'关闭'
+                            }
+                        </div>
                         <div className="btn send-btn" onClick={sendMsg}>发送</div>
                     </div>
                 </div>
@@ -210,4 +252,4 @@ function tcpClientPage(){
     )
 }
 
-export default tcpClientPage
+export default TcpClientPage

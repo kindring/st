@@ -1,7 +1,12 @@
-const defaultState = {}
+import { createStore, combineReducers } from 'redux'
 
+import socket from './socket'
+import win from './win'
+const reduxers = combineReducers({
+    socket: socket,
+    win: win
+})
 
-
-export default (state = defaultState, action) => {
-    return state
-}
+let store = createStore(reduxers);
+// console.log(store)
+export default store
