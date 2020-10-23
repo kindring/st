@@ -9,13 +9,17 @@ const defaultState = {
 
 export default (state = defaultState, action) => {
     let stateCopy = JSON.parse(JSON.stringify(state))
-    console.log(stateCopy)
     switch (action.type) {
         case types.CHANGE_HEX_MODEL:
             stateCopy.hex_model = !stateCopy.hex_model
             break;
         case types.CHANGE_REMOVE_SPACE:
             stateCopy.auto_remove_space = !stateCopy.auto_remove_space
+            break;
+        case types.set_main_socket:
+            console.log(action)
+            console.log(stateCopy)
+            stateCopy.main_socket = action.id
             break;
         default:
             return stateCopy

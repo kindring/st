@@ -1,7 +1,7 @@
 import React,{ useState } from 'react'
 import {connect,useSelector,useDispatch } from 'react-redux'
 import css from './tcpClientPage.css'
-
+import api from '../api/index'
 let obj = {
     type:'udp',
     module:'client',
@@ -10,18 +10,7 @@ let obj = {
     localport:'12345'
 }
 let sockets = []
-ipcRenderer.on('udpClient-created',(event,id)=>{
-    console.log('连接成功,可以发送消息了',id)
-    sockets.push({
-        id,
-        type:'udp',
-        model:'client'
-    })
 
-});
-ipcRenderer.on('udpClient-msg',(event,arg)=>{
-    console.log('接受到数据:'+arg)
-})
 
 function TcpClientPage(props){
     
@@ -74,11 +63,12 @@ function TcpClientPage(props){
             return console.log('拒绝连接,需要详细的数据')
         }
         //尝试进行连接
-        ipcRenderer.send('udpCreate',{
-            remoteAddress:obj.address, 
-            remotePort:obj.port, 
-            localPort:obj.localport
-        });
+        api.socket.createUdpClient(obj.address,obj.port,obj.localport)
+        // ipcRenderer.send('udpCreate',{
+        //     remoteAddress:obj.address, 
+        //     remotePort:obj.port, 
+        //     localPort:obj.localport
+        // });
 
     }
     function sendMsg(){
@@ -86,15 +76,8 @@ function TcpClientPage(props){
         if(sockets.length < 0){
             return alert('请先创建连接')
         }
-        
         //获取对象
-        let idArr = sockets.forEach(item=>{ 
-            console.log(item.id)
-            ipcRenderer.send('udp-enum',{
-                id:item.id,
-                msg:msg
-            });
-        })
+        api.socket.mainSend(msg)
         
     }
     //修改模式
