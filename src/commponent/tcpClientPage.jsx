@@ -1,7 +1,7 @@
 import React,{ useState } from 'react'
-import {connect,useSelector } from 'react-redux'
+import {connect,useSelector,useDispatch } from 'react-redux'
 import css from './tcpClientPage.css'
-let {ipcRenderer} = window.electron;
+
 let obj = {
     type:'udp',
     module:'client',
@@ -26,6 +26,8 @@ ipcRenderer.on('udpClient-msg',(event,arg)=>{
 function TcpClientPage(props){
     
     let state = useSelector(state=>state)
+    let socket = state.socket;
+    let dispatch = useDispatch()
     let map = {
         address:{
             save(str){
@@ -55,7 +57,6 @@ function TcpClientPage(props){
         }
     }
     let msg = '默认字符串'
-    console.log(state)
     // 改变数值的事件
     function changeStateHandel(e,name){
         e.preventDefault();
@@ -98,21 +99,20 @@ function TcpClientPage(props){
     }
     //修改模式
     function modelChangeHandel(e,model){
-        // console.log(state);
-        // switch (model) {
-        //     case 'hex':
-        //         store.dispatch({
-        //             type:'CHANGE_HEX_MODEL'
-        //         })
-        //         break;
-        //     case 'space':
-        //         store.dispatch({
-        //             type:'CHANGE_REMOVE_SPACE'
-        //         })
-        //         break;
-        //     default:
-        //         break;
-        // }
+        switch (model) {
+            case 'hex':
+                dispatch({
+                    type:'CHANGE_HEX_MODEL'
+                })
+                break;
+            case 'space':
+                dispatch({
+                    type:'CHANGE_REMOVE_SPACE'
+                })
+                break;
+            default:
+                break;
+        }
         
     }
     return (
@@ -240,7 +240,8 @@ function TcpClientPage(props){
                         >
                             自动删除空格
                         {
-                                // state.socket.auto_remove_space?'开启':'关闭'
+                                socket.auto_remove_space?'开启':'关闭'
+                            
                             }
                         </div>
                         <div className="btn send-btn" onClick={sendMsg}>发送</div>
