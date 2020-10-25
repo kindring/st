@@ -21,6 +21,18 @@ export default (state = defaultState, action) => {
             console.log(stateCopy)
             stateCopy.main_socket = action.id
             break;
+        case types.add_sockets:
+            //设置sockets数组
+            stateCopy.sockets.push(action.socket)
+            break;
+        case types.set_msg:
+            let socket = stateCopy.sockets.find(item => item.id == action.obj.id)
+            if (socket) {
+                socket.messages.push(
+                    action.obj
+                )
+            }
+            break;
         default:
             return stateCopy
             break;

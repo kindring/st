@@ -25,12 +25,11 @@ function createUdp(type = 'client', remoteAddress, remotePort, localPort) {
     return udpObject;
 }
 
-function createUdpClient(event, remoteAddress, remotePort, localPort, eventId) {
+function createUdpClient(event, remoteAddress, remotePort, localPort, type, eventId) {
     //创建一个连接,存储在socket里面存储
-    let obj = createUdp('client', remoteAddress, remotePort, localPort);
+    let obj = createUdp(type, remoteAddress, remotePort, localPort);
     let socket = obj.socket
     socket.bind(localPort);
-    console.log(obj)
     socket.on('message', (msg, rinfo) => {
         console.log(msg)
         console.log(rinfo)
@@ -56,7 +55,16 @@ function send(event, arg) {
     })
 
 }
+
+function createTcp(event, arg) {
+    if (arg.type == 'server') {
+
+    } else {
+
+    }
+}
 //数据推送服务
 
-exports.createUdpClient = createUdpClient;
+exports.createUdp = createUdpClient;
+exports.createTcp = createTcp;
 exports.udpSend = send;
