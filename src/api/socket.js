@@ -94,7 +94,7 @@ function createUdpServe(localPort) {
     })
 }
 /** 创建tcp客户端 */
-function createTcpClient(localPort) {
+function createTcpClient(remoteAddress, remotePort, localPort) {
     let eId = eventId;
     eventId++;
     ipcRenderer.send('create-tcp', {
