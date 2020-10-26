@@ -52,6 +52,7 @@ function createTcpClient(event, arg) {
     tcp.connect(arg.remotePort, arg.remoteAddress, function() {
         //成功连接到服务端，可以开始进行通信了
         let id = socketsTotal + 1;
+        socketsTotal++;
         let tcpObject = {
             id,
             type: 'tcp',
@@ -70,6 +71,11 @@ function createTcpClient(event, arg) {
     })
     tcp.on('error', (err) => {
         tcpObject.state = 2;
+        event.replay('create-tcp-replay-' + eventId, {
+            state: 2,
+            id: null,
+            msg: err.message
+        })
     })
 
 
@@ -77,10 +83,26 @@ function createTcpClient(event, arg) {
 
 function createTcpServer(event, arg) {
     let tcp = net.createServer(function(socket) {
+        let id = socketsTotal + 1;
+        socketsTotal++;
         //创建成功
+        let tcpObject = {
+            id,
+            type: 'tcp',
+            model: 'server',
+            remoteAddress: null,
+            remotePort: null,
+            socket: tcp,
+            connects: []
+        }
+        event.replay('create-tcp-replay-' + eventId, {
+            state: 1,
+            id: tcpObject.id,
+            msg: 'ok'
+        })
     })
     tcp.listen(arg.localPort, () => {
-
+        console.log('成功开启tcp监听服务')
     })
 }
 

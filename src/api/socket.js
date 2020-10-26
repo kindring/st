@@ -102,7 +102,7 @@ function createTcpClient(remoteAddress, remotePort, localPort) {
         localPort: localPort,
         eventId: eId
     })
-    ipcRenderer.on('create-tcp-replay', (event, arg) => {
+    ipcRenderer.on('create-tcp-replay', (event, item) => {
         console.log('创建tcp回复')
         if (item.state == 0) {
             //成功创建
