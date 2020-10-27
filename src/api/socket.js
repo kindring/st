@@ -98,8 +98,10 @@ function createTcpClient(remoteAddress, remotePort, localPort) {
     let eId = eventId;
     eventId++;
     ipcRenderer.send('create-tcp', {
-        type: client,
+        type: 'client',
         localPort: localPort,
+        remoteAddress: remoteAddress,
+        remotePort: remotePort,
         eventId: eId
     })
     ipcRenderer.on('create-tcp-replay', (event, item) => {
@@ -115,6 +117,42 @@ function createTcpClient(remoteAddress, remotePort, localPort) {
                 id: item.id,
                 type: 'tcp',
                 model: 'client',
+                remoteAddress: null,
+                remotePort: null,
+                localPort: localPort,
+                messages: [],
+            }
+            store.dispatch({
+                type: tps.socket.add_socket,
+                socket: obj,
+            })
+        } else {
+            console.log('创建失败' + item.msg)
+        }
+    })
+}
+/** 创建tcp服务端 */
+function createTcpServer(localPort) {
+    let eId = eventId;
+    eventId++;
+    ipcRenderer.send('create-tcp', {
+        type: 'server',
+        localPort: localPort,
+        eventId: eId
+    })
+    ipcRenderer.on('create-tcp-replay', (event, item) => {
+        console.log('创建tcp回复')
+        if (item.state == 0) {
+            //成功创建
+            store.dispatch({
+                type: tps.socket.set_main_socket,
+                id: item.id
+            });
+            //往数组里面添加数据
+            let obj = {
+                id: item.id,
+                type: 'tcp',
+                model: 'server',
                 remoteAddress: null,
                 remotePort: null,
                 localPort: localPort,

@@ -1,5 +1,6 @@
 let net = require('net')
 let dgram = require('dgram');
+const { ipcMain } = require('electron');
 
 let sockets = []; //udp客户端
 let socketsTotal = 0;
@@ -82,8 +83,37 @@ function createTcpClient(event, arg) {
 }
 
 function createTcpServer(event, arg) {
+    const id = socketsTotal + 1;
     let tcp = net.createServer(function(socket) {
-        let id = socketsTotal + 1;
+        //接受到客户端连接
+        // 存储连接对象
+        let soc = sockets.find(item => item.id == id)
+        const connectId = soc.connects.length + 1
+        if (soc) {
+            soc.connects.push({
+                    id: connectId,
+                    socket: socket,
+                    state: 1, //0 未连接 1已经连接 2彻底断开连接
+                    dataState: 0, //传输数据中 0false 1true
+                })
+                // 接听socket的数据
+        }
+        //开始接收信息
+        socket.on('close', () => {
+                //从数组中移除某个值
+                soc = null;
+                soc.connects = soc.connects.filter(item => item.id !== connectId)
+            })
+            // let data = [];
+        socket.on('data', (data) => {
+            ipcMain.send('tcp-client-msg', {
+                id,
+                connectId,
+                msg: data.toString()
+            })
+        })
+    })
+    tcp.listen(arg.localPort, () => {
         socketsTotal++;
         //创建成功
         let tcpObject = {
@@ -100,9 +130,6 @@ function createTcpServer(event, arg) {
             id: tcpObject.id,
             msg: 'ok'
         })
-    })
-    tcp.listen(arg.localPort, () => {
-        console.log('成功开启tcp监听服务')
     })
 }
 
@@ -124,7 +151,7 @@ function createTcp(event, arg) {
     if (arg.type == 'server') {
         createTcpServer(event, arg)
     } else {
-        createTcpClient(event, arg)
+        // createTcpClient(event, arg)yar
     }
 }
 //数据推送服务

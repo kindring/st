@@ -1,0 +1,40 @@
+.switch-btn {
+    height: 30px;
+    width: 65px;
+    display: flex;
+    position: relative;
+    justify-content: space-between;
+    background-color: gray;
+    border: 1px solid gray;
+    border-radius: 15px;
+    cursor: pointer;
+}
+
+.switch-btn .bg {
+    width: 30px;
+    height: 30px;
+    background-color: skyblue;
+    transition: all 0.7s;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+}
+
+.switch-btn .model1 {
+    left: 0;
+}
+
+.switch-btn .model2 {
+    left: 35px;
+}
+
+.switch-btn>.btn {
+    width: 30px;
+    height: 30px;
+    line-height: 25px;
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    /* background-color: #f00; */
+}

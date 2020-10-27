@@ -2,6 +2,7 @@ import React,{ useState } from 'react'
 import {connect,useSelector,useDispatch } from 'react-redux'
 import css from './tcpClientPage.css'
 import api from '../api/index'
+import SwitchBtn from './btnBox/switchBtn'
 let obj = {
     type:'udp',
     module:'client',
@@ -102,6 +103,15 @@ function TcpClientPage(props){
         <div className="tc">
             <div className="config-box">
                 <div className="connect">
+                    <div className="row">
+                        <span>连接协议：</span>
+                        <SwitchBtn value1="tcp" value2="udp"></SwitchBtn>
+                        <span>运行模式</span>
+                        <div className="switch">
+                            <div className="model">client</div>
+                            <div className="model">server</div>
+                        </div>
+                    </div>
                     <div className="row">
                         <div className="address-box i">
                             <input type="text" className="input" onBlur={(e)=>{changeStateHandel(e,'address')}}/>
