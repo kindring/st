@@ -1,4 +1,4 @@
-import React,{ useState } from 'react'
+import React,{ useState ,useRef} from 'react'
 import {connect,useSelector,useDispatch } from 'react-redux'
 import css from './tcpClientPage.css'
 import api from '../api/index'
@@ -14,14 +14,27 @@ let sockets = []
 
 
 function TcpClientPage(props){
-    
+    /** redux仓库的对象 */
     let state = useSelector(state=>state)
     let socket = state.socket;
-    let dispatch = useDispatch()
+    let dispatch = useDispatch();
+
+    /** ref对象 */
+    let protocol = useRef(null);
+    let model = useRef(null);
+    /** 数据存储的位置,一般是本地数据 */
+    let data = {
+        protocol:'tcp',//连接协议
+        model:'server',//连接模式
+        remoteAddress:'',//服务端地址
+        remotePort:'',//服务端端口
+        localPort:'',//本地端口
+    }
+    /** 用来操作本地数据,save方法用来存储 */
     let map = {
-        address:{
+        remoteAddress:{
             save(str){
-                obj.address = str;
+                data.remoteAddress = str;
             },
             check(str){
                 let reg = /((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}/g;
@@ -29,9 +42,9 @@ function TcpClientPage(props){
                 return !reg.test(str)
             }
         },
-        port:{
+        remotePort:{
             save(str){
-                obj.port = str;
+                data.remotePort = str;
             },
             check(str){ 
                 return str > 0 && str < 65536 
@@ -39,96 +52,120 @@ function TcpClientPage(props){
         },
         localport:{
             save(str){
-                obj.localport = str;
+                data.localPort = str;
             },
             check(str){ 
                 return str > 0 && str < 65536 
             }
+        },
+        protocol:{
+            save(value){
+                data.protocol = value
+            }
+        },
+        model:{
+            save(value){
+                data.model = value
+            }
         }
     }
+    /** 数据对象 */
     let msg = '默认字符串'
-    // 改变数值的事件
-    function changeStateHandel(e,name){
-        e.preventDefault();
-        let value = e.target.value;
-        if(!map[name].check(value)){
-            return console.log('不正确的数值')
+    
+    /** 尝试创建新连接 */
+    function tryConnect(){
+        //查看选择的协议和模式那些
+        if(data.protocol == 'tcp'){
+            if(data.model == 'server')
+            {
+                api.socket.createTcpServer(data.localPort)
+            }else
+            {
+                api.socket.createTcpClient(data.remoteAddress,data.remotePort,data.localPort)
+            }
+        }else{
+            console.log(data)
+            if(data.model == 'server')
+            {
+                api.socket.createUdpServe(data.localPort)
+            }else
+            {
+                if(!data.remoteAddress||!data.remotePort||!data.localPort){
+                    return console.log('当前连接缺少数据')
+                }else{
+                    api.socket.createUdpClient(data.remoteAddress,data.remotePort,data.localPort)
+                }
+                
+            }
         }
-        //存储当前的state
-        map[name].save(value)
     }
-    // 点击事件绑定
-    function handelClick(){
-        console.log(obj)
-        if(!obj.address||!obj.port||!obj.localport){
-            return console.log('拒绝连接,需要详细的数据')
-        }
-        //尝试进行连接
-        api.socket.createUdpClient(obj.address,obj.port,obj.localport)
-        // ipcRenderer.send('udpCreate',{
-        //     remoteAddress:obj.address, 
-        //     remotePort:obj.port, 
-        //     localPort:obj.localport
-        // });
-
-    }
-    function sendMsg(){
-        //检查是否有socket对象
-        if(sockets.length < 0){
-            return alert('请先创建连接')
-        }
-        //获取对象
-        api.socket.mainSend(msg)
-        
-    }
-    //修改模式
-    function modelChangeHandel(e,model){
-        switch (model) {
-            case 'hex':
-                dispatch({
-                    type:'CHANGE_HEX_MODEL'
-                })
-                break;
-            case 'space':
-                dispatch({
-                    type:'CHANGE_REMOVE_SPACE'
-                })
-                break;
-            default:
-                break;
-        }
-        
-    }
+    
     return (
         <div className="tc">
             <div className="config-box">
                 <div className="connect">
                     <div className="row">
-                        <span>连接协议：</span>
-                        <SwitchBtn value1="tcp" value2="udp"></SwitchBtn>
-                        <span>运行模式</span>
-                        <div className="switch">
-                            <div className="model">client</div>
-                            <div className="model">server</div>
+                        <div className="check" >
+                            
+                            <span onClick={protocolClickHandel}>连接协议</span>
+                            <SwitchBtn 
+                            ref={protocol} 
+                            value1="tcp" 
+                            value2="udp" 
+                            OnChange={value=>checkChnageHandel('protocol',value)}
+                            />
+                        </div>
+                        <div className="check">
+                            <span onClick={modelClickHandel}>运行模式</span>
+                            <SwitchBtn 
+                            ref={model} 
+                            value1="server" 
+                            value2="client" 
+                            OnChange={value=>checkChnageHandel('model',value)}
+                            />
                         </div>
                     </div>
                     <div className="row">
                         <div className="address-box i">
-                            <input type="text" className="input" onBlur={(e)=>{changeStateHandel(e,'address')}}/>
+                            <input 
+                            type="text" 
+                            className="input" 
+                            placeholder="远程主机的ip地址" 
+                            onBlur={(e)=>{changeStateHandel(e,'remoteAddress')}}
+                            />
                         </div>
                         <div className="port-box i">
-                            <input type="text" className="input"  onBlur={(e)=>{changeStateHandel(e,'port')}}/>
+                            <input 
+                            type="text" 
+                            className="input"
+                            placeholder="端口号" 
+                            onBlur={(e)=>{changeStateHandel(e,'remotePort')}}
+                            />
                         </div>
                     </div>
                     <div className="row">
-                        本地断开监听:<input type="text" className="input"  onBlur={(e)=>{changeStateHandel(e,'localport')}}/>
+                        本地端口监听:
+                        <input 
+                        type="text" 
+                        className="input"  
+                        onBlur={(e)=>{changeStateHandel(e,'localport')}} 
+                        />
                     </div>
                     <div className="row row-btns">
                         <div className="con-btn state">
                             
                         </div>
-                        <div className="con-btn connect-btn" onClick={handelClick}>连接</div>
-                        <div className="con-btn close-btn">断开</div>
+                        <div 
+                        className="con-btn connect-btn" 
+                        onClick={tryConnect}
+                        >
+                            连接
+                        </div>
+                        <div 
+                        className="con-btn close-btn"
+                        >
+                            断开
+                        </div>
                     </div>
                         
                 </div>
@@ -211,6 +248,21 @@ function TcpClientPage(props){
                         <div className="line"></div>
                     </div>
                     <div className="request">
+                        {/* 当前连接对象的基本信息 */}
+                        <div className="information">
+                            <div className="chunk">
+                                本机ip端口  192.168.1.128:60000
+                            </div>
+                            <div className="chunk">
+                                <span>连接的客户端信息</span>
+                                <div className="connects">
+                                    <div className="connect">
+                                        <div className="ip">127.0.0.1</div>
+                                        <div className="address">3555</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <textarea name="request" id="" cols="30" rows="10" className="request-input" onBlur={e=>{msg = e.target.value}}></textarea>
                     </div>
                     <div className="control">
@@ -244,6 +296,60 @@ function TcpClientPage(props){
             </div>
         </div>
     )
+    function protocolClickHandel(){
+        if(protocol.current.click){
+            protocol.current.click()
+        }
+    }
+    function modelClickHandel(){
+        if(model.current.click){
+            model.current.click()
+        }
+    }
+    /** 保存连接协议模式数据 */
+    function checkChnageHandel(item,value){
+        console.log(item)
+        console.log(value)
+        map[item].save(value)
+    }
+    /** 用来监听数值修改事件,并且自动保存数据 */
+    function changeStateHandel(e,name){
+        e.preventDefault();
+        let value = e.target.value;
+        if(!map[name].check(value)){
+            return console.log('不正确的数值')
+        }
+        //存储当前的state
+        map[name].save(value)
+    }   
+    /** 修改数据发送模式 16进制和空格模式 */
+    function modelChangeHandel(e,model){
+        switch (model) {
+            case 'hex':
+                dispatch({
+                    type:'CHANGE_HEX_MODEL'
+                })
+                break;
+            case 'space':
+                dispatch({
+                    type:'CHANGE_REMOVE_SPACE'
+                })
+                break;
+            default:
+                break;
+        }
+        
+    }
+    /** 用于发送数据 */
+    function sendMsg(){
+        //检查是否有socket对象
+        if(sockets.length < 0){
+            return alert('请先创建连接')
+        }
+        //获取对象
+        api.socket.mainSend(msg)
+        
+    }
 }
 
 export default TcpClientPage

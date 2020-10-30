@@ -21,8 +21,8 @@ export default (state = defaultState, action) => {
             console.log(stateCopy)
             stateCopy.main_socket = action.id
             break;
-        case types.add_sockets:
-            //设置sockets数组
+        case types.add_socket:
+            //设置sockets数组12
             stateCopy.sockets.push(action.socket)
             break;
         case types.set_msg:

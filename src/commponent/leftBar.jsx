@@ -26,7 +26,6 @@ function leftBar(state){
                         </li>
                     })
                 }
-                <li className="li"></li>
             </ul>
         </div>
     )

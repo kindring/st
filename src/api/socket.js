@@ -9,6 +9,7 @@ let eventId = 1;
 
 // 创建客户端
 function createUdpClient(remoteAddress, remotePort, localPort) {
+    console.log('--- 尝试创建数据 ---')
     console.log(arguments)
     let eId = eventId;
     eventId++;
@@ -25,6 +26,7 @@ function createUdpClient(remoteAddress, remotePort, localPort) {
         //获取回复
         let eId = eventId;
         eventId++;
+        console.log(item)
         if (item.state == 0) {
             //成功创建
             store.dispatch({
@@ -54,19 +56,20 @@ function createUdpClient(remoteAddress, remotePort, localPort) {
 //创建服务的
 function createUdpServe(localPort) {
     console.log(arguments)
+
     let eId = eventId;
     eventId++;
     ipcRenderer.send('create-udp', {
         remoteAddress: null,
         remotePort: null,
         localPort: localPort,
-        type: 'client',
-        eventId: eventId
+        type: 'server',
+        eventId: eId
     });
-
+    console.log(eId)
     ipcRenderer.once('create-udp-replay-' + eId, (arg, item) => {
         //获取回复
-        console.log('创建回复')
+        console.log('创建udp回复')
         if (item.state == 0) {
             //成功创建
             store.dispatch({
@@ -104,7 +107,7 @@ function createTcpClient(remoteAddress, remotePort, localPort) {
         remotePort: remotePort,
         eventId: eId
     })
-    ipcRenderer.on('create-tcp-replay', (event, item) => {
+    ipcRenderer.on('create-tcp-reply', (event, item) => {
         console.log('创建tcp回复')
         if (item.state == 0) {
             //成功创建
@@ -140,7 +143,7 @@ function createTcpServer(localPort) {
         localPort: localPort,
         eventId: eId
     })
-    ipcRenderer.on('create-tcp-replay', (event, item) => {
+    ipcRenderer.on('create-tcp-reply', (event, item) => {
         console.log('创建tcp回复')
         if (item.state == 0) {
             //成功创建
@@ -167,13 +170,14 @@ function createTcpServer(localPort) {
         }
     })
 }
-//接收到udp的消息
+//接收到主进的socket消息
 ipcRenderer.on('msg', function(event, item) {
     //根据id来确定数据
-    store.dispatch({
-        type: tps.socket.set_msg,
-        obj: item
-    })
+    console.log(item)
+        // store.dispatch({
+        //     type: tps.socket.set_msg,
+        //     obj: item
+        // })
 })
 
 // 发送数据
@@ -185,14 +189,17 @@ function mainSend(msg) {
     let socket = sockets.find(item => {
         return item.id == index
     })
-    console.log(index)
+    console.log(`id为${index}的socket对象发送消息:${msg}`)
+    console.log(sockets)
     ipcRenderer.send('udp-enum', {
         id: index,
         msg: msg
     })
-    console.log('当前的主id数据')
 }
 export default {
+    createUdpServe,
     createUdpClient,
+    createTcpServer,
+    createTcpClient,
     mainSend
 }

@@ -30,6 +30,11 @@
     border-bottom: 1px solid black;
 }
 
+.leftBar>ul>li:hover {
+    background-color: #fff;
+    border-bottom: 1px solid #a8a8a8;
+}
+
 .leftBar .drag {
     height: 30px;
     width: 100%;

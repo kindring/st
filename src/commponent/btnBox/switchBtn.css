@@ -4,10 +4,18 @@
     display: flex;
     position: relative;
     justify-content: space-between;
-    background-color: gray;
+    background-color: #eaeaea;
     border: 1px solid gray;
     border-radius: 15px;
     cursor: pointer;
+    overflow: hidden;
+    moz-user-select: -moz-none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .switch-btn .bg {
@@ -19,6 +27,24 @@
     position: absolute;
     top: 0;
     z-index: 1;
+    box-shadow: 1px 1px 2px black;
+}
+
+.switch-btn .full-bg {
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    background-color: #fff;
+    transition: all 0.7s;
+}
+
+.switch-btn .full-model1 {
+    width: 100%;
+}
+
+.switch-btn .full-model2 {
+    width: 0%;
 }
 
 .switch-btn .model1 {
@@ -36,5 +62,8 @@
     position: relative;
     z-index: 2;
     text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     /* background-color: #f00; */
 }

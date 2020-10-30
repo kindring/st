@@ -44,6 +44,8 @@
     width: 100%;
     height: 100%;
     display: block;
+    outline: none;
+    border: 0;
 }
 
 .config-box .address-box {
@@ -192,4 +194,11 @@
     padding: 5px 10px;
     border-radius: 5px;
     border: 1px solid gray;
+}
+
+.tc .config-box .check {
+    display: flex;
+    margin: 0 5px;
+    align-items: center;
+    cursor: pointer;
 }
