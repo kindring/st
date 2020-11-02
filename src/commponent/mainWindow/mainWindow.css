@@ -10,4 +10,9 @@
     height: 100%;
     border-right: 1px solid gray;
     position: relative;
+    box-sizing: border-box;
+}
+
+.mainWindow>.content {
+    width: calc(100% - 175px);
 }

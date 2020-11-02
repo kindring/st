@@ -1,0 +1,139 @@
+.calculator {
+    width: 100%;
+    height: 100%;
+}
+
+.calculator .title {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    padding-left: 5px;
+    border-bottom: 1px solid #000;
+}
+
+.calculator .row {
+    width: 100%;
+    display: flex;
+}
+
+.calculator .row .btn {
+    margin: 0 10px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 3px;
+    border: 1px solid #000;
+    user-select: none;
+}
+
+.calculator .row .chunk {
+    width: auto;
+    display: flex;
+}
+
+.calculator .row>ul {
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.calculator .row>ul>li {
+    display: block;
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    margin: 0 10px;
+    cursor: pointer;
+    box-sizing: border-box;
+    user-select: none;
+    border-radius: 50%;
+}
+
+.calculator .row>ul>li .text {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.calculator .row>ul>.checked {
+    border: 1px solid red;
+}
+
+.calculator .line-box {
+    width: 500px;
+    height: 400px;
+    box-sizing: border-box;
+    padding: 5px;
+    border: 1px solid black;
+    overflow: auto;
+}
+
+.calculator .line-box .line {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    display: flex;
+    border: 1px solid #000;
+    cursor: default;
+    margin: 5px auto;
+}
+
+.hidevalue {
+    outline: none;
+    opacity: 0;
+}
+
+.calculator .line-box .line .num {
+    width: 30px;
+    text-align: center;
+}
+
+.calculator .line-box .line .text {
+    width: 110px;
+    text-align: center;
+}
+
+.calculator .line-box .line .value {
+    width: 270px;
+    height: 24px;
+    margin: 1px auto;
+    line-height: 24px;
+}
+
+.calculator .line-box .line .value .input {
+    width: 100%;
+    height: 24px;
+    outline: none;
+    /* cursor: ; */
+}
+
+.calculator .line-box .line .copy,
+.calculator .line-box .line .test {
+    width: 45px;
+    height: 24px;
+    line-height: 24px;
+    margin: 3px auto;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 1px 1px 2px black;
+    border-radius: 2px;
+}
+
+.calculator .line-box .line .copy:hover,
+.calculator .line-box .line .test:hover {
+    box-shadow: 1px 1px 5px #000;
+    background-color: antiquewhite;
+}
+
+.calculator .first {
+    padding: 10px 5px;
+    box-sizing: border-box;
+    justify-content: space-between;
+}
+
+.calculator .control .btn {
+    margin: 10px 15px;
+}
+
+.calculator .first .btn {}
