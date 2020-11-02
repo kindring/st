@@ -1,5 +1,5 @@
 {
-    "name": "串口工具",
+    "name": "socket_tools",
     "version": "0.1.1",
     "private": true,
     "main": "main.js",
