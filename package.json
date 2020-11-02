@@ -1,6 +1,6 @@
 {
-    "name": "socket_tool",
-    "version": "0.1.0",
+    "name": "串口工具",
+    "version": "0.1.1",
     "private": true,
     "main": "main.js",
     "homepage": ".",
