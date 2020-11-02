@@ -1,4 +1,5 @@
 const electron = require('electron');
+let { ipcMain } = require('electron')
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
 
@@ -9,7 +10,7 @@ const isDev = require('electron-is-dev');
 
 let win = require('./js/test')
 let ipc = require('./js/ipc')
-let ipcRouter = require('./bridge')
+let ipcRouter = require('./js/bridge')
 
 /**主窗口对象 */
 let mainWindow;
@@ -31,8 +32,20 @@ function createWindow() {
     });
     ipc.windows['main'] = mainWindow;
     console.log(isDev ? 'http://127.0.0.1:3000' : `file://${path.join(__dirname, './build/index.html')}`);
+    ipcMain.on('exitApp', (event, arg) => {
+        mainWindow.close();
+    });
+    ipcMain.on('minApp', (event, arg) => {
+        console.log('最小化窗口')
+        mainWindow.minimize();
+    });
+    ipcMain.on('fullApp', (event, arg) => {
+        mainWindow.maximize();
+    });
+    ipcMain.on('nomoreApp', (event, arg) => {
+        mainWindow.unmaximize();
+    });
 
-    // mainWindow.loadFile(isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, './build/index.html')}`)
     mainWindow.loadURL(isDev ? 'http://127.0.0.1:3000' : `file://${path.join(__dirname, './build/index.html')}`);
     mainWindow.openDevTools();
 
@@ -53,20 +66,3 @@ app.on('activate', () => {
         createWindow();
     }
 });
-
-
-
-// mainWindow = win({
-//   width: 800,
-//   height: 600,
-//   backgroundColor:'#00FFFFFF',
-//   frame:false,
-//   // autoHideMenuBar:true,
-//   // transparent:true
-//   openDevTools: true,
-//   nodeIntegration:false,
-//   preload: path.join(__dirname, './public/renderer.js')
-// },{
-//   mod:'loadURL',
-//   path:isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, './build/index.html')}`
-// });
