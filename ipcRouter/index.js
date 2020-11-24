@@ -1,7 +1,7 @@
 let net = require('net')
 let dgram = require('dgram');
 const { ipcMain } = require('electron');
-
+const { mainWindow } = require('../main');
 let sockets = []; //udp客户端
 let socketsTotal = 0;
 /** 创建udp服务，我自定义的对象
@@ -90,6 +90,7 @@ function createUdpClient(event, remoteAddress, remotePort, localPort, type, even
 
 function createTcpClient(event, arg) {
     let tcp = net.Socket();
+    console.log('尝试开启tcp客户端连接');
     tcp.connect(arg.remotePort, arg.remoteAddress, function() {
         //成功连接到服务端，可以开始进行通信了
         let id = socketsTotal + 1;
@@ -104,7 +105,8 @@ function createTcpClient(event, arg) {
             state: 1, //套接字状态， 0 未连接 1 连接  2 错误
             connects: []
         }
-        event.reply('create-tcp-reply-' + arg.eId, {
+        console.log('创建成功');
+        event.reply('create-tcp-reply-' + arg.eventId, {
             state: 0,
             id: tcpObject.id,
             msg: '成功'
@@ -112,7 +114,7 @@ function createTcpClient(event, arg) {
     })
     tcp.on('error', (err) => {
         tcpObject.state = 2;
-        event.reply('create-tcp-reply-' + arg.eId, {
+        event.reply('create-tcp-reply-' + arg.eventId, {
             state: 2,
             id: null,
             msg: err.message
@@ -125,7 +127,7 @@ function createTcpClient(event, arg) {
 function createTcpServer(event, arg) {
     const id = socketsTotal + 1;
     let tcp = net.createServer(function(socket) {
-        //接受到客户端连接
+        //接受到客户端的连接
         // 存储连接对象
         let soc = sockets.find(item => item.id == id)
         console.log(socket)
@@ -155,7 +157,7 @@ function createTcpServer(event, arg) {
             }
             event.reply('msg', msgObject)
         })
-    })
+    });
     tcp.listen(arg.localPort, () => {
         socketsTotal++;
         //创建成功
@@ -224,7 +226,47 @@ function createTcp(event, arg) {
         createTcpClient(event, arg)
     }
 }
-//数据推送服务
+
+
+//主动发消息给渲染进程.目前只设置为一个前端进程,所以为
+function sendRender(event, arg) {
+    mainWindow.webContents.send(event, arg)
+}
+
+/**
+ * 创建socket服务的接口
+ * @param {*} event 事件句柄,创建成功后将会event.reply函数进行相关的回复
+ * @param {*} arg 
+ */
+function createSocket(event, arg) {
+    let defaultOpt = {
+        protocol: 'tcp', //连接协议
+        model: 'server', //连接模式
+        remoteAddress: '', //服务端地址
+        remotePort: '', //服务端端口
+        localPort: '', //本地端口
+        sid: null, //socket的唯一标识,由前端生成
+    }
+    let finalOpt = {...defaultOpt, ...arg };
+    //判断是否有sid,如果没有sid则不管他
+    if (finalOpt.sid == null) {
+        console.error('没有获取到sid');
+        console.log(finalOpt);
+        console.log('----上面是设置默认值之后的参数---');
+        return false;
+    }
+    //尝试连接
+    switch (finalOpt.protocol) {
+        case 'tcp':
+            createTcp();
+            break;
+        case 'udp':
+            createUdp();
+            break;
+        default:
+            console.error('未知的协议类型,暂时不支持此类型');
+    }
+}
 
 exports.createUdp = createUdpClient;
 exports.createTcp = createTcp;

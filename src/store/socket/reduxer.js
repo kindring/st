@@ -3,30 +3,30 @@ let { ipcRenderer } = window.electron;
 const defaultState = {
     auto_remove_space: false, //自动删除空格
     hex_model: false, //16发送
-    main_socket: null, //当前主要活动的链接id
-    sockets: [] //所有连接的数组
+    main_sid: null, //主要的连接id
+    sockets: [], //所有连接的数组
+
 }
 
 export default (state = defaultState, action) => {
     let stateCopy = JSON.parse(JSON.stringify(state))
     switch (action.type) {
-        case types.CHANGE_HEX_MODEL:
+        case types.CHANGE_HEX_MODEL: //修改发送模式 16进制模式和非16进制模式
             stateCopy.hex_model = !stateCopy.hex_model
             break;
-        case types.CHANGE_REMOVE_SPACE:
+        case types.CHANGE_REMOVE_SPACE: //修改自动移除空格模式
             stateCopy.auto_remove_space = !stateCopy.auto_remove_space
             break;
-        case types.set_main_socket:
+        case types.set_main_socket: //设置主要的通信连接数据
             console.log(action)
             console.log(stateCopy)
             stateCopy.main_socket = action.id
             break;
-        case types.add_socket:
-            //设置sockets数组12
+        case types.save_socket: // 添加socket的数据
             stateCopy.sockets.push(action.socket)
             break;
-        case types.set_msg:
-            let socket = stateCopy.sockets.find(item => item.id == action.obj.id)
+        case types.set_msg: //设置某个socket连接的数据
+            let socket = stateCopy.sockets.find(item => item.sid == action.obj.sid)
             if (socket) {
                 socket.messages.push(
                     action.obj

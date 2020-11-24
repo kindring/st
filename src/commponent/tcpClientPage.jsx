@@ -22,6 +22,7 @@ function TcpClientPage(props){
     /** ref对象 */
     let protocol = useRef(null);
     let model = useRef(null);
+
     /** 数据存储的位置,一般是本地数据 */
     let data = {
         protocol:'tcp',//连接协议
@@ -69,35 +70,15 @@ function TcpClientPage(props){
             }
         }
     }
+    
     /** 数据对象 */
     let msg = '默认字符串'
     
     /** 尝试创建新连接 */
     function tryConnect(){
         //查看选择的协议和模式那些
-        if(data.protocol == 'tcp'){
-            if(data.model == 'server')
-            {
-                api.socket.createTcpServer(data.localPort)
-            }else
-            {
-                api.socket.createTcpClient(data.remoteAddress,data.remotePort,data.localPort)
-            }
-        }else{
-            console.log(data)
-            if(data.model == 'server')
-            {
-                api.socket.createUdpServe(data.localPort)
-            }else
-            {
-                if(!data.remoteAddress||!data.remotePort||!data.localPort){
-                    return console.log('当前连接缺少数据')
-                }else{
-                    api.socket.createUdpClient(data.remoteAddress,data.remotePort,data.localPort)
-                }
-                
-            }
-        }
+        // 直接调用api来尝试连接
+        api.socket.tryConnect(data);
     }
     
     return (
@@ -106,13 +87,12 @@ function TcpClientPage(props){
                 <div className="connect">
                     <div className="row">
                         <div className="check" >
-                            
                             <span onClick={protocolClickHandel}>连接协议</span>
                             <SwitchBtn 
-                            ref={protocol} 
-                            value1="tcp" 
-                            value2="udp" 
-                            OnChange={value=>checkChnageHandel('protocol',value)}
+                                ref={protocol} 
+                                value1="tcp" 
+                                value2="udp" 
+                                OnChange={value=>checkChnageHandel('protocol',value)}
                             />
                         </div>
                         <div className="check">
@@ -308,8 +288,6 @@ function TcpClientPage(props){
     }
     /** 保存连接协议模式数据 */
     function checkChnageHandel(item,value){
-        console.log(item)
-        console.log(value)
         map[item].save(value)
     }
     /** 用来监听数值修改事件,并且自动保存数据 */

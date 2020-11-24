@@ -66,3 +66,5 @@ app.on('activate', () => {
         createWindow();
     }
 });
+
+exports.mainWindow = mainWindow;

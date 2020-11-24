@@ -65,7 +65,11 @@ function Calculator(props) {
             value:'fe'
         }
     ]
-    let finalValue = ''
+    let finalValue = '',
+    space = false;
+    function setSpace(){
+        space = !space;
+    }
     return (
         <div className="calculator">
             <div className="title">
@@ -174,7 +178,9 @@ function Calculator(props) {
             <br/>
             <div className="row">
             <input type="text" className="hidevalue" ref={inputEl}/>
-                <div className="btn">空格格式化</div>
+                <div className="btn" onClick={
+                    setSpace
+                }>空格格式化</div>
                 <div className="btn" onClick={()=>{
                     setResult([])
                 }}>清空</div>
@@ -297,7 +303,10 @@ function Calculator(props) {
         for(var i= comList.length-1;i>=0;i--){
             arr.push(comList[i]?'1':'0')
         }
+        console.log(arr);
         let result = comInstruct(address,arr)
+        result = space?result.replace(/\s*/g,""):result;
+        // 判断是否需要删除空格
         let a = results.map(item=>item)
         a.push({
             model:'联合指令',
@@ -307,14 +316,16 @@ function Calculator(props) {
     }
     /** 只生成闭合项 */
     function createClose(){
-        let arr = []
-        for(var i= comList.length-1;i>0;i--){
-            arr.push(comList[i]?'1':'0')
+        let arr = [];
+        for(var i= comList.length-1;i>=0;i--){
+            arr.push(comList[i]?'1':'0');
         }
+        console.log(arr);
         let result = closeInstruct(address,arr)
+        result = space?result.replace(/\s*/g,""):result;
         let a = results.map(item=>item)
         a.push({
-            model:'联合指令',
+            model:'只开启',
             value:result
         })
         setResult(a)
@@ -322,13 +333,16 @@ function Calculator(props) {
     /** 只生成开启项 */
     function createOpen(){
         let arr = []
-        for(var i= comList.length-1;i>0;i--){
+        for(var i= comList.length-1;i>=0;i--){
             arr.push(comList[i]?'1':'0')
         }
-        let result = breakInstruct(address,arr)
-        let a = results.map(item=>item)
+        
+        console.log(arr);
+        let result = breakInstruct(address,arr);
+        result = space?result.replace(/\s*/g,""):result;
+        let a = results.map(item=>item);
         a.push({
-            model:'联合指令',
+            model:'只关闭',
             value:result
         })
         setResult(a)
@@ -457,31 +471,38 @@ function comInstruct(address,channel_state) {
     let str = computeCrc(tArr);
     return str
 }
-/** 生成断开指令
+/** 只生成闭合指令,只开灯
  */
 function breakInstruct(address,channel_state) {
+    //找出闭合项进行数据生成
+    let arr = '';
+    //只有为1的设置为1
+    channel_state.forEach((item, i) => {
+        let a = item == 1 ? 1 : 0;
+        arr += a;
+    })
+    console.log('打开')
+    console.log(arr);
+    arr = parseInt(arr, 2).toString(16)
+    let tArr = [address, '10', 4, '1a', 0, 2, 4, 0, arr, 0, 0];
+    let str = computeCrc(tArr);
+    return str
+}
+/** 只生成断开指令,只关灯
+ */
+function closeInstruct(address,channel_state) {
     //找出闭合项进行数据生成
     let arr = '';
     channel_state.forEach((item, i) => {
         let a = item == 0 ? 1 : 0;
         arr += a;
     })
+    console.log('关闭')
+    console.log(arr);
     arr = parseInt(arr, 2).toString(16)
-    let tArr = [address, '10', 4, '1e', 0, 2, 4, 0, arr, 0, 0];
-    let str = computeCrc(tArr);
-    return str
-}
-/** 生成闭合指令
- */
-function closeInstruct(address,channel_state) {
-    //找出闭合项进行数据生成
-    let arr = '';
-    channel_state.forEach((item, i) => {
-        let a = item == 1 ? 1 : 0;
-        arr += a;
-    })
-    arr = parseInt(arr, 2).toString(16)
-    let tArr = [address, '10', 4, '1a', 0, 2, 4, 0, arr, 0, 0];
+    console.log(arr);
+    //
+    let tArr = [address, '10', 4, '1c', 0, 2, 4, 0, arr, 0, 0];
     let str = computeCrc(tArr);
     return str
 }
