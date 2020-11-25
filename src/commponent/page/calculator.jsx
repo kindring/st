@@ -65,10 +65,10 @@ function Calculator(props) {
             value:'fe'
         }
     ]
-    let finalValue = '',
-    space = false;
-    function setSpace(){
-        space = !space;
+    let finalValue = '';
+    let [space,setSpace] = useState(false);
+    function set_space(){
+        setSpace(!space)
     }
     return (
         <div className="calculator">
@@ -179,7 +179,7 @@ function Calculator(props) {
             <div className="row">
             <input type="text" className="hidevalue" ref={inputEl}/>
                 <div className="btn" onClick={
-                    setSpace
+                    set_space
                 }>空格格式化</div>
                 <div className="btn" onClick={()=>{
                     setResult([])
