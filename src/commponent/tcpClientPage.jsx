@@ -22,20 +22,21 @@ function TcpClientPage(props){
     /** ref对象 */
     let protocol = useRef(null);
     let model = useRef(null);
-
-    /** 数据存储的位置,一般是本地数据 */
-    let data = {
+    let [ data , setData ] = useState({
         protocol:'tcp',//连接协议
         model:'server',//连接模式
         remoteAddress:'',//服务端地址
         remotePort:'',//服务端端口
         localPort:'',//本地端口
-    }
+    });
     /** 用来操作本地数据,save方法用来存储 */
     let map = {
         remoteAddress:{
             save(str){
-                data.remoteAddress = str;
+                setData({
+                    ...data,
+                    remoteAddress:str
+                });
             },
             check(str){
                 let reg = /((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}/g;
@@ -45,7 +46,10 @@ function TcpClientPage(props){
         },
         remotePort:{
             save(str){
-                data.remotePort = str;
+                setData({
+                    ...data,
+                    remotePort:str
+                });
             },
             check(str){ 
                 return str > 0 && str < 65536 
@@ -53,7 +57,10 @@ function TcpClientPage(props){
         },
         localport:{
             save(str){
-                data.localPort = str;
+                setData({
+                    ...data,
+                    localPort:str
+                });
             },
             check(str){ 
                 return str > 0 && str < 65536 
@@ -61,24 +68,30 @@ function TcpClientPage(props){
         },
         protocol:{
             save(value){
-                data.protocol = value
+                setData({
+                    ...data,
+                    protocol:value
+                })
             }
         },
         model:{
             save(value){
-                data.model = value
+                setData({
+                    ...data,
+                    model:value
+                })
             }
         }
     }
-    
+    console.log('abc');
     /** 数据对象 */
-    let msg = '默认字符串'
+    let msg = '默认字符串';
     
     /** 尝试创建新连接 */
     function tryConnect(){
         //查看选择的协议和模式那些
         // 直接调用api来尝试连接
-        api.socket.tryConnect(data);
+        api.socket.tryConnect({...data});
     }
     
     return (

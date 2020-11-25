@@ -125,7 +125,7 @@ function createTcpServer(sid, opt) {
     eventId++;
     ipcRenderer.send('create-tcp', {
         type: 'server',
-        localPort: localPort,
+        localPort: opt.localPort,
         eventId: eId
     })
     ipcRenderer.on('create-tcp-reply', (event, item) => {
@@ -143,7 +143,7 @@ function createTcpServer(sid, opt) {
                 model: 'server',
                 remoteAddress: null,
                 remotePort: null,
-                localPort: localPort,
+                localPort: opt.localPort,
                 messages: [],
             }
             store.dispatch({
@@ -155,6 +155,8 @@ function createTcpServer(sid, opt) {
         }
     })
 }
+
+
 //接收到主进的socket消息
 ipcRenderer.on('msg', function(event, item) {
     //根据id来确定数据
@@ -209,13 +211,15 @@ function saveSocket(options) {
     };
     //生成 s_id 
     let sid = createSid();
+    console.log(sid);
     // 生成用来保存的数据
-    let finalOption = {...defaultOption, ...options, sid };
+    let finalOption = {...defaultOption, ...options, sid: sid };
     // 保存数据到本地
     store.dispatch({
-        type: tps.socket.saveSocket,
+        type: tps.socket.save_socket,
         socket: finalOption
     });
+    console.log(store)
     return sid;
 }
 
@@ -244,19 +248,22 @@ function tryConnect(data) {
         remoteAddress: '', //服务端地址
         remotePort: '', //服务端端口
         localPort: '', //本地端口
-        sid: null, //socket的唯一标识,由前端生成
+        sid: 0, //socket的唯一标识,由前端生成
     }
     let finalOpt = {...defaultOpt, ...data };
-    ipcRenderer.send('create-socket', finalOpt);
     //创建id 前端存储数据.
     let sid = saveSocket(finalOpt);
-
+    console.log(sid);
+    console.log(finalOpt);
+    console.log('------')
+    finalOpt.sid = sid;
     //发送创建数据的操作
-    ipcRenderer.send('create-socket', {...finalOpt, sid });
+    ipcRenderer.send('create-socket', {...finalOpt, sid: sid });
 
     // 回复监听,即创建连接成功的监听数据
     handelCreated({...finalOpt, sid }, function(event, arg) {
         console.log(`成功创建了${finalOpt.protocol} ${finalOpt.model}`);
+        console.log(arg);
     });
 }
 

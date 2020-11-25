@@ -7,7 +7,7 @@ export default {
     CHANGE_HEX_MODEL: "CHANGE_HEX_MODEL",
     CHANGE_MAIN_SOCKE: "CHANGE_MAIN_SOCKE",
     set_main_socket: "SET_MAIN_SOCKET",
-    add_socket: "ADD_SOCKETS",
+    save_socket: "SAVE_SOCKETS",
     remove_sockets: "REMOVE_SOCKETS",
     set_msg: "SET_MSG",
     set_sockets: 'SET_SOCKETS'

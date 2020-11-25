@@ -10,8 +10,10 @@ const isDev = require('electron-is-dev');
 
 let win = require('./js/test')
 let ipc = require('./js/ipc')
+
 let ipcRouter = require('./js/bridge')
 
+let publicS = require('./publicS');
 /**主窗口对象 */
 let mainWindow;
 
@@ -30,6 +32,8 @@ function createWindow() {
             preload: path.join(__dirname, './public/renderer.js') // 但预加载的 js 文件内仍可以使用 Nodejs 的 API
         },
     });
+    console.log('---------');
+    publicS.setMainWindow(mainWindow);
     ipc.windows['main'] = mainWindow;
     console.log(isDev ? 'http://127.0.0.1:3000' : `file://${path.join(__dirname, './build/index.html')}`);
     ipcMain.on('exitApp', (event, arg) => {
