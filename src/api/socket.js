@@ -117,6 +117,7 @@ function createTcpClient(sid, opt) {
     // 回复监听,即创建连接成功的监听数据
     handelCreated(finalOpt, function(event, arg) {
         console.log('成功创建了tcp客户端的连接');
+        //将当前主连接设置为当前的sid
     });
 }
 /** 创建tcp服务端 */
@@ -166,6 +167,29 @@ ipcRenderer.on('msg', function(event, item) {
         //     obj: item
         // })
 })
+
+/**
+ * 发送socket消息
+ * @param {*} msg 
+ */
+function send(msg) {
+    let msgOption = {
+        sid: null, //socket连接的id
+        cid: null, //客户端的id
+        msg: msg, //具体的消息
+        hex: false, //是否要处理为hex模式的数据
+        space: false //是否要删除空格
+    }
+    let soc = store.getState().socket;
+    console.log(soc);
+    let sid = soc.main_sid;
+    let hex = soc.hex_model;
+    let space = soc.auto_remove_space;
+    let finalMsgOption = {...msgOption, sid, hex, space };
+    ipcRenderer.send('socket-send', finalMsgOption);
+}
+
+
 
 // 发送数据
 function mainSend(msg) {
@@ -231,6 +255,7 @@ function saveSocket(options) {
 function handelCreated(opt, cb) {
     // 自动注册一次接受响应事件,默认当成完成
     ipcRenderer.on('create-socket-reply-' + opt.sid, (event, arg) => {
+        console.log(opt);
         cb(event, arg);
     });
 }
@@ -262,12 +287,23 @@ function tryConnect(data) {
 
     // 回复监听,即创建连接成功的监听数据
     handelCreated({...finalOpt, sid }, function(event, arg) {
-        console.log(`成功创建了${finalOpt.protocol} ${finalOpt.model}`);
-        console.log(arg);
+        console.log('----------------------------------------------------------')
+        if (arg.code == 1) {
+            // 设置属性
+            store.dispatch({
+                type: tps.socket.set_main_socket,
+                sid: sid
+            });
+            console.log(`成功创建了${finalOpt.protocol} ${finalOpt.model}`);
+        } else {
+            console.log(arg);
+            console.error('创建失败了')
+        }
     });
 }
 
 export default {
     mainSend,
+    send,
     tryConnect,
 }

@@ -18,25 +18,22 @@ function TcpClientPage(props){
     let state = useSelector(state=>state)
     let socket = state.socket;
     let dispatch = useDispatch();
-
+    console.log(socket.nowSocketData);
     /** ref对象 */
-    let protocol = useRef(null);
-    let model = useRef(null);
-    let [ data , setData ] = useState({
-        protocol:'tcp',//连接协议
-        model:'server',//连接模式
-        remoteAddress:'',//服务端地址
-        remotePort:'',//服务端端口
-        localPort:'',//本地端口
-    });
+    let protocolRef = useRef(null);
+    let modelRef = useRef(null);
+    let data = {...socket.nowSocketData};
+    let [protocol,setProtocol] = useState(socket.nowSocketData.protocol);
+    let [model,setModel] = useState(socket.nowSocketData.model);
+    let [remoteAddress,setRemoteAddress] = useState(socket.nowSocketData.remoteAddress);
+    let [remotePort,setRemotePort] = useState(socket.nowSocketData.remotePort);
+    let [localPort,setLocalPort] = useState(socket.nowSocketData.localPort);
+    console.log(data);
     /** 用来操作本地数据,save方法用来存储 */
     let map = {
         remoteAddress:{
             save(str){
-                setData({
-                    ...data,
-                    remoteAddress:str
-                });
+                setRemoteAddress(str);
             },
             check(str){
                 let reg = /((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}/g;
@@ -46,10 +43,18 @@ function TcpClientPage(props){
         },
         remotePort:{
             save(str){
-                setData({
-                    ...data,
-                    remotePort:str
-                });
+                setRemotePort(str);
+                dispatch({
+                    type: 'SAVE_NOW_DATA',
+                    data:{
+                            protocol, //连接协议
+                            model, //连接模式
+                            remoteAddress, //服务端地址
+                            remotePort, //服务端端口
+                            localPort
+                        }
+                    }
+                );
             },
             check(str){ 
                 return str > 0 && str < 65536 
@@ -57,10 +62,18 @@ function TcpClientPage(props){
         },
         localport:{
             save(str){
-                setData({
-                    ...data,
-                    localPort:str
-                });
+                setLocalPort(str);
+                dispatch({
+                    type: 'SAVE_NOW_DATA',
+                    data:{
+                            protocol, //连接协议
+                            model, //连接模式
+                            remoteAddress, //服务端地址
+                            remotePort, //服务端端口
+                            localPort
+                        }
+                    }
+                );
             },
             check(str){ 
                 return str > 0 && str < 65536 
@@ -68,24 +81,40 @@ function TcpClientPage(props){
         },
         protocol:{
             save(value){
-                setData({
-                    ...data,
-                    protocol:value
-                })
+                setProtocol(value);
+                dispatch({
+                    type: 'SAVE_NOW_DATA',
+                    data:{
+                            protocol, //连接协议
+                            model, //连接模式
+                            remoteAddress, //服务端地址
+                            remotePort, //服务端端口
+                            localPort
+                        }
+                    }
+                );
             }
         },
         model:{
             save(value){
-                setData({
-                    ...data,
-                    model:value
-                })
+                setModel(value);
+                dispatch({
+                    type: 'SAVE_NOW_DATA',
+                    data:{
+                            protocol, //连接协议
+                            model, //连接模式
+                            remoteAddress, //服务端地址
+                            remotePort, //服务端端口
+                            localPort
+                        }
+                    }
+                );
             }
         }
     }
     console.log('abc');
     /** 数据对象 */
-    let msg = '默认字符串';
+    let [msg,setMsg] = useState('默认字符串');
     
     /** 尝试创建新连接 */
     function tryConnect(){
@@ -102,7 +131,7 @@ function TcpClientPage(props){
                         <div className="check" >
                             <span onClick={protocolClickHandel}>连接协议</span>
                             <SwitchBtn 
-                                ref={protocol} 
+                                ref={protocolRef} 
                                 value1="tcp" 
                                 value2="udp" 
                                 OnChange={value=>checkChnageHandel('protocol',value)}
@@ -111,7 +140,7 @@ function TcpClientPage(props){
                         <div className="check">
                             <span onClick={modelClickHandel}>运行模式</span>
                             <SwitchBtn 
-                            ref={model} 
+                            ref={modelRef} 
                             value1="server" 
                             value2="client" 
                             OnChange={value=>checkChnageHandel('model',value)}
@@ -124,7 +153,9 @@ function TcpClientPage(props){
                             type="text" 
                             className="input" 
                             placeholder="远程主机的ip地址" 
-                            onBlur={(e)=>{changeStateHandel(e,'remoteAddress')}}
+                            value={remoteAddress}
+                            onChange={(e)=>{changeStateHandel(e,'remoteAddress')}}
+                            onBlur={(e)=>{changeStateHandel(e,'localport')}} 
                             />
                         </div>
                         <div className="port-box i">
@@ -132,7 +163,9 @@ function TcpClientPage(props){
                             type="text" 
                             className="input"
                             placeholder="端口号" 
-                            onBlur={(e)=>{changeStateHandel(e,'remotePort')}}
+                            value={remotePort}
+                            onChange={(e)=>{changeStateHandel(e,'remotePort')}}
+                            onBlur={(e)=>{changeStateHandel(e,'localport')}} 
                             />
                         </div>
                     </div>
@@ -141,6 +174,8 @@ function TcpClientPage(props){
                         <input 
                         type="text" 
                         className="input"  
+                        value={localPort}
+                        onChange={(e)=>{changeStateHandel(e,'localport')}} 
                         onBlur={(e)=>{changeStateHandel(e,'localport')}} 
                         />
                     </div>
@@ -256,7 +291,7 @@ function TcpClientPage(props){
                                 </div>
                             </div>
                         </div>
-                        <textarea name="request" id="" cols="30" rows="10" className="request-input" onBlur={e=>{msg = e.target.value}}></textarea>
+                        <textarea name="request" id="" cols="30" rows="10" className="request-input" onBlur={e=>{ setMsg(e.target.value)}}></textarea>
                     </div>
                     <div className="control">
                         <div 
@@ -290,18 +325,29 @@ function TcpClientPage(props){
         </div>
     )
     function protocolClickHandel(){
-        if(protocol.current.click){
-            protocol.current.click()
+        if(protocolRef.current.click){
+            protocolRef.current.click()
         }
     }
     function modelClickHandel(){
-        if(model.current.click){
-            model.current.click()
+        if(modelRef.current.click){
+            modelRef.current.click();
         }
     }
     /** 保存连接协议模式数据 */
     function checkChnageHandel(item,value){
-        map[item].save(value)
+        map[item].save(value);
+        dispatch({
+            type: 'SAVE_NOW_DATA',
+            data:{
+                    protocol, //连接协议
+                    model, //连接模式
+                    remoteAddress, //服务端地址
+                    remotePort, //服务端端口
+                    localPort
+                }
+            }
+        );
     }
     /** 用来监听数值修改事件,并且自动保存数据 */
     function changeStateHandel(e,name){
@@ -310,8 +356,22 @@ function TcpClientPage(props){
         if(!map[name].check(value)){
             return console.log('不正确的数值')
         }
+        console.log('----------');
+        console.log(value);
         //存储当前的state
-        map[name].save(value)
+        map[name].save(value);
+        //延迟修改数据
+        dispatch({
+            type: 'SAVE_NOW_DATA',
+            data:{
+                    protocol, //连接协议
+                    model, //连接模式
+                    remoteAddress, //服务端地址
+                    remotePort, //服务端端口
+                    localPort
+                }
+            }
+        );
     }   
     /** 修改数据发送模式 16进制和空格模式 */
     function modelChangeHandel(e,model){
@@ -338,7 +398,7 @@ function TcpClientPage(props){
             return alert('请先创建连接')
         }
         //获取对象
-        api.socket.mainSend(msg)
+        api.socket.send(msg);
         
     }
 }

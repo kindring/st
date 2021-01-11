@@ -52,13 +52,26 @@ function saveSocket(arg) {
  * @return {Number} cid 当前连接在客户端中的socketid 
  */
 function addSocketConnect(sid, connectObj) {
-    let soc = socketList.find(item => item.sid == sid);
+    let soc = socketList.find(item => {
+        console.log(item);
+        return item.sid == sid
+    });
+
+    let c = soc.connects.find(item => {
+        if (item.address == connectObj.address && item.port == connectObj.port) {
+            return item;
+        }
+    })
+    if (c) {
+        // 旧连接发消息过来了
+        return c.cid;
+    }
     /**
      * 连接的客户端id
      */
     let c_id = soc.cid + 1;
     soc.cid = c_id + 1;
-    soc.push({
+    soc.connects.push({
         ...connectObj,
         c_id,
         history: []
@@ -74,8 +87,8 @@ function addSocketConnect(sid, connectObj) {
  */
 function saveSocketConnectMsg(sid, cid, msg) {
     //找到soc
-    let soc = socketList.find(item => item.sid == sid);
-    let c = soc.connect.find(item => item.cid == cid);
+    let soc = socketList.find(item => { return item.sid == sid });
+    let c = soc.connect.find(item => { item.cid == cid });
     c.history.push(msg);
 }
 /**
@@ -102,6 +115,7 @@ function removeSocketConnet(sid, cid) {
  */
 function socketReply(code, sid, msg) {
     let event = `create-socket-reply-${sid}`
+    console.log(event);
     sendMsg(event, {
         code: code,
         sid,
@@ -119,67 +133,6 @@ function sendMsg(event, arg) {
     publicS.getMainwindow().webContents.send(event, arg);
 }
 
-/** 创建udp服务,客户端和服务端 */
-function createUdpClient(event, remoteAddress, remotePort, localPort, type, eventId) {
-    //创建一个连接,存储在socket里面存储
-    // console.log(arguments)
-    let obj = createUdp(type, remoteAddress, remotePort, localPort);
-    console.log(obj)
-    let socket = obj.socket
-    console.log(type)
-    if (type == 'server') {
-        socket.bind(localPort);
-    } else {
-        if (localPort) {
-            socket.bind(localPort)
-        }
-    }
-    console.log(obj)
-    console.log(obj.id)
-    console.log(eventId)
-    event.reply('create-udp-reply-' + eventId, {
-        state: 0,
-        id: obj.id,
-        msg: '成功'
-    });
-    socket.on('message', (msg, rinfo) => {
-        if (type == 'server') {
-            console.log('服务端的连接')
-                //查看当前对象是否存在于连接对象中
-            let item = obj.connects.find(item => {
-                item.address == rinfo.address && item.port == rinfo.port
-            })
-            if (item) {
-                //当前对象存在于连接对象中,不处理
-            } else {
-                let data = {
-                        id: obj.connects.length == 0 ? 1 : obj.connects.length,
-                        address: rinfo.address,
-                        port: rinfo.port
-                    }
-                    //当前连接对象不存在此客户端,处理
-                obj.connects.push(data)
-                    //对象连接上来了,所以需要对其进行数据发送
-                event.reply('connect', {
-
-                })
-            }
-        }
-        let msgObject = {
-            socketId: obj.id, //对象
-            rinfo, //发送消息者的基本信息
-            hex: msg.toString('hex'), //16进制解码
-            msg: msg.toString(), //消息
-
-        }
-        event.reply('msg', msgObject)
-
-    });
-
-}
-
-
-
 
 
 
@@ -196,7 +149,7 @@ function sendRender(event, arg) {
  * @param {Number} sid id
  * @param {*} arg 配置信息
  */
-function createUdp(sid, arg) {
+function createUdp(event, arg) {
     let udp = dgram.createSocket('udp4');
     let defaultOpt = {
         protocol: 'udp', //连接协议
@@ -207,14 +160,23 @@ function createUdp(sid, arg) {
         sid: null, //socket的唯一标识,由前端生成
     };
     if (arg.model == 'server') {
+        //指定监听端口
         udp.bind(arg.localPort);
-    };
+    } else {
+        addSocketConnect(arg.sid, {
+            address: arg.remoteAddress,
+            port: arg.remotePort,
+            socket: udp,
+        })
+    }
     udp.on('message', (msg, rinfo) => {
         //收到客户端信息
-        let cid = addSocketConnect(sid, rinfo);
+        let cid = addSocketConnect(arg.sid, {...rinfo, socket: udp });
         console.log(msg);
-        saveSocketConnectMsg(sid, cid, msg);
+        console.log(rinfo);
+        saveSocketConnectMsg(arg.sid, cid, msg);
     });
+    socketReply(1, arg.sid);
 }
 
 // tcp相关
@@ -230,7 +192,14 @@ function createTcpClient(sid, remoteAddress, remotePort) {
     console.log('开启tcp客户端连接');
     tcp.connect(remotePort, remoteAddress, function() {
         //成功连接到服务端，可以开始进行通信了
-        socketReply(1, sid)
+        socketReply(1, sid);
+        //存储当前实例到数组中去
+        //将当前对象添加到连接中去
+        addSocketConnect(sid, {
+            address: remoteAddress,
+            port: remotePort,
+            socket: tcp
+        })
     });
     tcp.on('error', (error) => {
         socketReply(2, sid, error.message);
@@ -346,11 +315,99 @@ function createSocket(event, arg) {
     }
 }
 
-exports.createUdp = createUdpClient;
+
+/**
+ * 发送socket消息
+ * @param {*} event 
+ * @param {*} arg
+ * @param {String} arg.msg 要发送的具体消息
+ * @param {Number} arg.sid socket的id 
+ * @param {Number} [arg.cid] 连接的id
+ * @param {Boolean} arg.space 是否删除空格
+ * @param {Boolean} arg.hex 是否为16进制发送
+ */
+function socketSend(event, arg) {
+    let defaultArg = {
+        msg: '',
+        sid: null,
+        cid: null,
+        space: false,
+        hex: false,
+    }
+    console.log('传入的信息');
+    console.table(arg);
+    let finalArg = {...defaultArg, ...arg }
+    console.log('当前的消息');
+    console.log(finalArg);
+
+    finalArg.msg = finalArg.space ? finalArg.msg.replace(/' '/, '') : finalArg.msg;
+    //判断是否需要进行16进制的消息处理
+    if (finalArg.hex) {
+        let strs = finalArg.msg.split(' ');
+        if (strs.length == 1) {
+            strs = strs[0];
+            //无法自动切割
+            let str = '';
+            for (var x = 0; x < strs.length; x++) {
+                str += strs[x];
+                if ((x + 1) % 2 == 0) {
+                    str += ' '
+                }
+            }
+            strs = str.split(' ');
+        }
+        console.log(strs);
+        for (let i = 0; i < strs.length; i++) {
+            strs[i] = "0x" + strs[i];
+        } //每个字符加上0x
+
+        let buffer = Buffer.from(strs);
+        console.log(buffer);
+
+        console.log('0-0-0--00-')
+        console.log(buffer.toString('hex'));
+        finalArg.msg = buffer; //将数组放到buffer
+    }
+    console.log('要发送的socket消息');
+    console.log(finalArg.msg);
+    // 根据协议来发送消息
+    let socket = socketList.find(item => {
+        return item.sid == finalArg.sid
+    });
+    if (!socket) {
+        return console.error('未能找到响应的数据');
+    }
+    switch (socket.protocol) {
+        case "tcp":
+            // 查看协议
+            if (!finalArg.cid) {
+                for (var i in socket.connects) {
+                    let cli = socket.connects[i];
+                    cli.socket.write(finalArg.msg);
+                }
+            }
+
+            break;
+
+        case 'udp':
+            if (!finalArg.cid) {
+                console.log(socket);
+                for (var i in socket.connects) {
+                    let cli = socket.connects[i];
+                    cli.socket.send(finalArg.msg, cli.port, cli.address);
+                }
+            }
+            break;
+    }
+}
+
+// exports.createUdp = createUdpClient;
 // exports.createTcp = createTcp;
 
 
 exports.udpSend = null;
 
+
+exports.send = socketSend;
 
 exports.createSocket = createSocket;

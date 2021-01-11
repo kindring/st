@@ -10,5 +10,6 @@ export default {
     save_socket: "SAVE_SOCKETS",
     remove_sockets: "REMOVE_SOCKETS",
     set_msg: "SET_MSG",
-    set_sockets: 'SET_SOCKETS'
+    set_sockets: 'SET_SOCKETS',
+    save_now_datas: 'SAVE_NOW_DATA'
 }

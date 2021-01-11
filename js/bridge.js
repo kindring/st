@@ -5,7 +5,10 @@ let ipcRouter = require('../ipcRouter/index')
 
 
 ipcMain.on('create-socket', (event, arg) => {
-        console.log('88888888888888888888')
-        ipcRouter.createSocket(event, arg)
-    })
-    // module.exports = ipcMain;
+    console.log('88888888888888888888')
+    ipcRouter.createSocket(event, arg)
+});
+// module.exports = ipcMain;
+ipcMain.on('socket-send', (event, arg) => {
+    ipcRouter.send(event, arg)
+});
