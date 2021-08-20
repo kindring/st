@@ -4,4 +4,5 @@
 #### react 
 ## 启动方式
     `yarn dev`
-## 
+## 打包方式
+    `yarn package`
