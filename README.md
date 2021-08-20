@@ -4,9 +4,9 @@
 #### react 
 ## 启动方式
 ```shell
-    yarn dev
+yarn dev
 ```
 ## 打包方式
 ```shell
-    yarn package
+yarn package
 ```
