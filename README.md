@@ -3,6 +3,10 @@
 #### electron 
 #### react 
 ## 启动方式
-    `yarn dev`
+```shell
+    yarn dev
+```
 ## 打包方式
-    `yarn package`
+```shell
+    yarn package
+```
