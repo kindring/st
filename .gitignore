@@ -7,7 +7,7 @@
 
 # testing
 /coverage
-
+./.electron-cache/
 # production
 /build
 
