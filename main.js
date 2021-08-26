@@ -1,3 +1,11 @@
+/*
+ * @Author: your name
+ * @Date: 2021-08-25 16:38:01
+ * @LastEditTime: 2021-08-26 16:38:07
+ * @LastEditors: your name
+ * @Description: In User Settings Edit
+ * @FilePath: \st\main.js
+ */
 const electron = require('electron');
 let { ipcMain } = require('electron')
 const app = electron.app;
@@ -12,6 +20,7 @@ let win = require('./js/test')
 let ipc = require('./js/ipc')
 
 let ipcRouter = require('./js/bridge')
+let ffmpegServer = require('./js/ffmpeg/index')
 
 let publicS = require('./publicS');
 /**主窗口对象 */

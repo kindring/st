@@ -11,19 +11,19 @@ import store from './store'
 function App() {
     return < >
         <
-        Provider store = { store } >
-        <
-        div className = "App" > { /* {new topBar({wintitle:'test'}).render()} */ } {
-            /* <TopBar wintitle='music'></TopBar>
-                    <WinContent></WinContent> */
-        } <
-        TopBar / >
-        <
-        MainWindow / >
-        <
+        Provider store={store} >
+            <
+        div className="App" > { /* {new topBar({wintitle:'test'}).render()} */} {
+                    /* <TopBar wintitle='music'></TopBar>
+                            <WinContent></WinContent> */
+                } <
+                    TopBar />
+                <
+                    MainWindow />
+                <
         /div> <
         /Provider> <
         />;
 }
 
-export default App;
+                export default App;

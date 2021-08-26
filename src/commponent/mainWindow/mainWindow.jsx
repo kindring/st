@@ -4,6 +4,8 @@ import LeftBar from '../leftBar'
 import TC from '../tcpClientPage'
 import store from '../../store/index.js'
 import Calculator from '../page/calculator';
+
+import Video from '../page/VideoPlay/VideoPlay';
 // console.log(store.getState())
 // console.log(electron)
 
@@ -25,12 +27,20 @@ function MainWindow(){
             cb(){
                 setPage(2)
             }
+        },
+        {
+            id:3,
+            name:'测试ffmpeg',
+            cb(){
+                setPage(3)
+            }
         }
     ]
     let renderComponent =()=>{
         switch (page) {
           case 1: return <TC/>
           case 2: return <Calculator/>
+          case 3: return <Video/>
           default: return <TC/>
         }
     }
