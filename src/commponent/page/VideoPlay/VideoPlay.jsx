@@ -18,7 +18,11 @@ function VideoPlay(props){
     let videoSource = video.video_info.videoSource;
     const refVideo = useRef(null);
     if(videoSource){
+        console.log('测试')
         refVideo.current.play()
+    }
+    function playVideo(){
+        refVideo.current.play();
     }
     return (
         <div className="tc">
@@ -27,8 +31,8 @@ function VideoPlay(props){
             </div>
             <br />
             类型:{type} 影片时间:{duration}
-            <video width="600" ref={refVideo}>
-                <source src={videoSource}></source>
+            <button type="button" className="btn" onClick={playVideo}>播放视频</button>
+            <video width="600" ref={refVideo} src={videoSource}>
             </video>
         </div>
     )

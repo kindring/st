@@ -1,11 +1,12 @@
 /*
  * @Author: kindring
  * @Date: 2021-08-26 13:51:55
- * @LastEditTime: 2021-08-26 17:56:45
+ * @LastEditTime: 2021-08-27 09:54:28
  * @LastEditors: Please set LastEditors
  * @Description: 存放资源文件
  * @FilePath: \st\js\ffmpeg\videoController.js
  */
+const fs = require('fs');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 const ffmpeg = require('fluent-ffmpeg');
 ffmpeg.setFfmpegPath(ffmpegPath);
@@ -17,6 +18,23 @@ function videoStream(id, startTime, res) {
     startTime = parseInt(startTime);
     let videoSourceInfo = videoSourceInfos[id]
     if(!videoSourceInfo){return res.status(404)}
+    if(videoSourceInfo.checkResult.videoCodecSupport && videoSourceInfo.checkResult.audioCodecSupport){
+        // 直接读取本地文件
+        res.type('mp4')
+        let frs = fs.createReadStream(videoSourceInfo.videoSourcePath)
+        frs.on('data',(data)=>{
+            res.write(data)
+        })
+        frs.on('end',(data)=>{
+            res.end(data)
+        })
+        frs.on('error',(error)=>{
+            console.log(error)
+            res.send(error.message)
+        })
+        return 
+    }
+    // 视频解码播放
     let videoCodec = videoSourceInfo.checkResult.videoCodecSupport ? 'copy' : 'libx264';
     let audioCodec = videoSourceInfo.checkResult.audioCodecSupport ? 'copy' : 'aac';
     killFfmpegCommand();
@@ -40,6 +58,7 @@ function videoStream(id, startTime, res) {
             console.log('Processing finished !');
         })
     let videoStream = _ffmpegCommand.pipe();
+    res.type('.mp4')
     videoStream.pipe(res);
 }
 
